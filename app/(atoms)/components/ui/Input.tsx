@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils'
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-// volver x si me faltan estilos
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (

@@ -7,7 +7,7 @@ import { Plus } from 'lucide-react'
 import { columns } from '../../../(atoms)/components/ui/CollectionColumns'
 import { Button } from '@/components/ui/Button'
 import { Separator } from '@/components/ui/Separator'
-import Loader from '@/components/ui/Loader'
+import Loading from '@/components/ui/Loading'
 import { DataTable } from '@/components/ui/DataTable'
 
 const Collections = () => {
@@ -17,14 +17,25 @@ const Collections = () => {
   const [collections, setCollections] = useState([])
 
   const getCollections = async () => {
-    // por definir
+    try {
+      const res = await fetch('/api/collections', {
+        method: 'GET',
+      })
+      const data = await res.json()
+      setCollections(data)
+      setLoading(false)
+    } catch (err) {
+      console.log('[collections_GET]', err)
+    }
   }
 
   useEffect(() => {
-    // por definir
+    getCollections()
   }, [])
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <div className="px-10 py-5">
       <div className="flex items-center justify-between">
         <p className="text-heading2-bold">Collections</p>
