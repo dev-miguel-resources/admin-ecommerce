@@ -1,7 +1,7 @@
-'use client'
+import CollectionForm from '@/components/CollectionForm'
 
 const CreateCollection = () => {
-  return <p>Hello am CreateCollection Page!</p>
+  return <CollectionForm />
 }
 
 export default CreateCollection
