@@ -6,7 +6,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
 
-// pendiente
+// pendiente estilos
 const labelVariants = cva(
     "text-sm font-medium"
 )
