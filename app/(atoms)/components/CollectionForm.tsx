@@ -99,7 +99,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
       {initialData ? (
         <div className="flex items-center justify-between">
           <p className="text-heading2-bold">Edit Collection</p>
-          <Delete />
+          <Delete item="collection" id={initialData._id} />
         </div>
       ) : (
         <p className="text-heading2-bold">Create Collection</p>
@@ -148,11 +148,28 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
               <FormItem>
                 <FormLabel>Image</FormLabel>
                 <FormControl>
-                  <ImageUpload />
+                  <ImageUpload
+                    value={field.value ? [field.value] : []}
+                    onChange={(url) => field.onChange(url)}
+                    onRemove={() => field.onChange('')}
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
+          <div className="flex gap-10">
+            <Button type="submit" className="bg-blue-1 text-white">
+              Submit
+            </Button>
+            <Button
+              type="button"
+              onClick={() => router.push('/collections')}
+              className="bg-blue-1 text-white"
+            >
+              Discard
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
@@ -160,5 +177,3 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
 }
 
 export default CollectionForm
-
-// Pendiente Delete

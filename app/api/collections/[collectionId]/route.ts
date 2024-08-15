@@ -29,4 +29,6 @@ export const GET = async (
   }
 };
 
+// crear el DELETE y ver el tema de operadores de mongo $
+
 export const dynamic = "force-dynamic";
