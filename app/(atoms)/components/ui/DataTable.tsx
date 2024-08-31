@@ -5,13 +5,15 @@ import { Button } from './Button'
 import {
   ColumnDef,
   ColumnFiltersState,
+  getFilteredRowModel,
   flexRender,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
-  getFilteredRowModel,
 } from '@tanstack/react-table'
 
+import { Input } from './Input'
+import { useState } from 'react'
 import {
   Table,
   TableBody,
@@ -20,11 +22,8 @@ import {
   TableHeader,
   TableRow,
 } from './Table'
-import Input from './Input'
-import { useState } from 'react'
-import { columns } from './CollectionColumns'
 
-// interfaz con columnas, datos y búsquedas con referencias de keys
+// interfaz con columnas, datos y búsquedas con la llave de búsqueda
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
@@ -36,24 +35,26 @@ export function DataTable<TData, TValue>({
   data,
   searchKey,
 }: DataTableProps<TData, TValue>) {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]) // para manejar el estado de los filtros
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]) // estado de los filtros
 
-  // configura la tabla con los datos, las columnas, filtrado y paginado
   const table = useReactTable({
+    // configura la tabla con los datos, las columnas, filtrado y paginado
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnFiltersChange: setColumnFilters,
-    getPaginationRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnFilters,
     },
   })
 
+  // input de busqueda para filtrar datos de la tabla
   return (
     <div className="py-5">
       <div className="flex items-center py-4">
+        {/* Obtiene el valor actual del filtro de la columna especificada por searchKey */}
         <Input
           placeholder="Search..."
           value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
@@ -65,6 +66,9 @@ export function DataTable<TData, TValue>({
       </div>
 
       <div className="rounded-md border">
+        {/* Obtiene e itera los encabezados de una tabla para renderizarlos y renderiza el contenido en la columna si existe
+        Si placeholder es true, significa que no hay nada que renderizar, sí no mapea las columns
+        */}
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -85,6 +89,9 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
 
+          {/* Componente para el cuerpo de la tabla, renderiza si hay resultado en la fila, sí no pone no results, a cada fila le da un id de estado
+            TableCell componente para una celda de datos vacíos luego del ternario.
+          */}
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
@@ -117,6 +124,7 @@ export function DataTable<TData, TValue>({
       </div>
 
       <div className="flex items-center justify-end space-x-2 py-4">
+        {/* getCanPreviousPage = deshabilita el botón si se devuelve false, lo que signfica que no hay una página previa disponible */}
         <Button
           variant="outline"
           size="sm"
@@ -126,6 +134,7 @@ export function DataTable<TData, TValue>({
           Previous
         </Button>
 
+        {/* getCanNextPage = deshabilita el botón si se devuelve false, lo que signfica que no hay una página siguiente disponible */}
         <Button
           variant="outline"
           size="sm"

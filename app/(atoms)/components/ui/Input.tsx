@@ -1,8 +1,9 @@
-'use client'
-
 import * as React from 'react'
+
 import { cn } from '@/lib/utils'
 
+// Define una interfaz InputProps que extiende las propiedades estándar de un elemento de entrada (<input>) HTML en React.
+//Esto significa que cualquier propiedad que sea válida en un <input> HTML también será válida en nuestro componente Input.
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
@@ -24,5 +25,3 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = 'Input'
 
 export { Input }
-
-export default Input

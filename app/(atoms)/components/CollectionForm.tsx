@@ -1,11 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { useRouter } from 'next/navigation'
-import { toast } from 'react-hot-toast'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { useRouter } from 'next/navigation'
+
 import { Separator } from './ui/Separator'
 import { Button } from './ui/Button'
 import {
@@ -16,31 +15,28 @@ import {
   FormLabel,
   FormMessage,
 } from './ui/Form'
-import Input from './ui/Input'
-// falta componente de text area
-// componente que se encarga de las imagenes
-import Delete from './ui/Delete'
+import { Input } from './ui/Input'
 import { TextArea } from './ui/TextArea'
 import ImageUpload from './ui/ImageUpload'
+import { useState } from 'react'
+import toast from 'react-hot-toast'
+import Delete from './ui/Delete'
 
-// esquema de validations
 const formSchema = z.object({
   title: z.string().min(2).max(20),
   description: z.string().min(2).max(500).trim(),
   image: z.string(),
 })
 
-// definir el tipo de Collection
 type CollectionType = {
-  _id: string
-  title: string
-  description: string
-  image: string
+  _id: string // Assuming collections might have an optional identifier.
+  title: string // Title of the collection
+  description: string // Description of the collection
+  image: string // URL of the image associated with the collection
 }
 
-// contrato de props del collection Form
 interface CollectionFormProps {
-  initialData?: CollectionType | null
+  initialData?: CollectionType | null //Must have "?" to make it optional
 }
 
 const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
@@ -48,7 +44,6 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
 
   const [loading, setLoading] = useState(false)
 
-  // definición del objeto form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData
@@ -60,7 +55,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
         },
   })
 
-  // manejo de un evento
+  // si la tecla presionada es enter previene el refresco de la página
   const handleKeyPress = (
     e:
       | React.KeyboardEvent<HTMLInputElement>
@@ -71,7 +66,6 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
     }
   }
 
-  // manejo de la función de envío del form
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true)
@@ -99,7 +93,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
       {initialData ? (
         <div className="flex items-center justify-between">
           <p className="text-heading2-bold">Edit Collection</p>
-          <Delete item="collection" id={initialData._id} />
+          <Delete id={initialData._id} item="collection" />
         </div>
       ) : (
         <p className="text-heading2-bold">Create Collection</p>
@@ -138,6 +132,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
                     onKeyDown={handleKeyPress}
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

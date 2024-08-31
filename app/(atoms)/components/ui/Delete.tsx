@@ -33,7 +33,8 @@ const Delete: React.FC<DeleteProps> = ({ item, id }) => {
 
       if (res.ok) {
         setLoading(false)
-        // agregarle un código
+        // agregarle un código para actualizar la ventana collections
+        window.location.href = `/${itemType}`
         toast.success(`${item} deleted`)
       }
     } catch (err) {
