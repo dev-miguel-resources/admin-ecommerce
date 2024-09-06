@@ -32,7 +32,9 @@ const Products = () => {
     getProducts()
   }, [])
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <div className="px-10 py-5">
       <div className="flex items-center justify-between">
         <p className="text-heading2-bold">Products</p>

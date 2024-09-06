@@ -4,40 +4,22 @@ import { connectToDB } from "@/lib/mongoDB";
 import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = async (
-  req: NextRequest,
-  { params }: { params: { productId: string } }
-) => {
+export const GET = async (req: NextRequest) => {
   try {
     await connectToDB();
-    // populate
-    // devolver un detalle de un modelo con sus propiedades + el detalle de campos de los docs. referenciados
-    const product = await Product.findById(params.productId).populate({
-      path: "collections",
-      model: Collection,
-    });
 
-    if (!product) {
-      return new NextResponse(
-        JSON.stringify({ message: "Product not found" }),
-        { status: 404 }
-      );
-    }
+    const products = await Product.find()
+      .sort({ createdAt: "desc" })
+      .populate({ path: "collections", model: Collection });
 
-    // puede que necesite agregar algo para más adelante
-    return new NextResponse(JSON.stringify(product), {
-      status: 200,
-    });
+    return NextResponse.json(products, { status: 200 });
   } catch (err) {
-    console.log("[product_GET]", err);
-    return new NextResponse("Internal error", { status: 500 });
+    console.log("[products_GET]", err);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
 
-export const DELETE = async (
-  req: NextRequest,
-  { params }: { params: { productId: string } }
-) => {
+export const POST = async (req: NextRequest) => {
   try {
     const { userId } = auth();
 
@@ -47,30 +29,57 @@ export const DELETE = async (
 
     await connectToDB();
 
-    const product = await Product.findById(params.productId);
+    const {
+      title,
+      description,
+      media,
+      category,
+      collections,
+      tags,
+      sizes,
+      colors,
+      price,
+      expense,
+    } = await req.json();
 
-    if (!product) {
-      return new NextResponse("Product not found", { status: 404 });
+    if (!title || !description || !media || !category || !price || !expense) {
+      return new NextResponse("Not enought data to create a product", {
+        status: 400,
+      });
     }
 
-    await Product.findByIdAndDelete(product._id);
-
-    await Promise.all(
-      product.collections.map((collectionId: string) => {
-        Collection.findByIdAndUpdate(collectionId, {
-          $pull: { products: product._id },
-        });
-      })
-    );
-
-    return new NextResponse(JSON.stringify({ message: "Product deleted" }), {
-      status: 200,
+    const newProduct = await Product.create({
+      title,
+      description,
+      media,
+      category,
+      collections,
+      tags,
+      sizes,
+      colors,
+      price,
+      expense,
     });
+
+    await newProduct.save();
+
+    // Si se proporciona un conjunto de collecciones, se itera cada collectionID para encontrar esas collections
+    // y agregarles el id del nuevo producto asociado
+    if (collections) {
+      for (const collectionId of collections) {
+        const collection = await Collection.findById(collectionId);
+        if (collection) {
+          collection.products.push(newProduct._id);
+          await collection.save();
+        }
+      }
+    }
+
+    return NextResponse.json(newProduct, { status: 200 });
   } catch (err) {
-    console.log("[productId_DELETE]", err);
-    return new NextResponse("Internal error", { status: 500 });
+    console.log("[products_POST]", err);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
 
-// pendiente una transacción compleja
 export const dynamic = "force-dynamic";
