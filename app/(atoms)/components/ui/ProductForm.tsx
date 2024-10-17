@@ -20,6 +20,9 @@ import {
 } from './Form'
 import { TextArea } from './TextArea'
 import ImageUpload from './ImageUpload'
+import MultiText from './MultiText'
+import MultiSelect from './MultiSelect'
+import { Button } from './Button'
 
 const formSchema = z.object({
   title: z.string().min(2).max(20),
@@ -85,8 +88,15 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
         },
   })
 
-  // pendiente
-  const handleKeyPress = () => {}
+  const handleKeyPress = (
+    e:
+      | React.KeyboardEvent<HTMLInputElement>
+      | React.KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+    }
+  }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -132,7 +142,11 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Title" {...field} />
+                  <Input
+                    placeholder="Title"
+                    {...field}
+                    onKeyDown={handleKeyPress}
+                  />
                 </FormControl>
                 <FormMessage className="text-red-1" />
               </FormItem>
@@ -145,7 +159,12 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <TextArea placeholder="Description" {...field} rows={5} />
+                  <TextArea
+                    placeholder="Description"
+                    {...field}
+                    rows={5}
+                    onKeyDown={handleKeyPress}
+                  />
                 </FormControl>
                 <FormMessage className="text-red-1" />
               </FormItem>
@@ -172,6 +191,176 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
               </FormItem>
             )}
           />
+
+          <div className="md:grid md:grid-cols-3 gap-8">
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Price ($)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Price"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="expense"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Expense ($)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Price"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Desc. Category</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Category"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <MultiText
+                      placeholder="Tags"
+                      value={field.value}
+                      onChange={(tag) => field.onChange([...field.value, tag])}
+                      onRemove={(tagRemove) =>
+                        field.onChange([
+                          ...field.value.filter((tag) => tag !== tagRemove),
+                        ])
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            {collections.length > 0 && (
+              <FormField
+                control={form.control}
+                name="collections"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Collections</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        placeholder="Collections"
+                        collections={collections}
+                        value={field.value}
+                        onChange={(_id) =>
+                          field.onChange([...field.value, _id])
+                        }
+                        onRemove={(idRemove) =>
+                          field.onChange([
+                            ...field.value.filter(
+                              (collectionId) => collectionId !== idRemove,
+                            ),
+                          ])
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-1" />
+                  </FormItem>
+                )}
+              />
+            )}
+            <FormField
+              control={form.control}
+              name="colors"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Colors</FormLabel>
+                  <FormControl>
+                    <MultiText
+                      placeholder="Colors"
+                      value={field.value}
+                      onChange={(color) =>
+                        field.onChange([...field.value, color])
+                      }
+                      onRemove={(colorRemove) =>
+                        field.onChange([
+                          ...field.value.filter(
+                            (color) => color !== colorRemove,
+                          ),
+                        ])
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="sizes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sizes</FormLabel>
+                  <FormControl>
+                    <MultiText
+                      placeholder="Sizes"
+                      value={field.value}
+                      onChange={(size) =>
+                        field.onChange([...field.value, size])
+                      }
+                      onRemove={(sizeRemove) =>
+                        field.onChange([
+                          ...field.value.filter((size) => size !== sizeRemove),
+                        ])
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-1" />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="flex gap-10">
+            <Button type="submit" className="bg-blue-1 text-white">
+              Submit
+            </Button>
+            <Button
+              type="button"
+              onClick={() => router.push('/products')}
+              className="bg-blue-1 text-white"
+            >
+              Discard
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
