@@ -1,12 +1,13 @@
 import { authMiddleware } from "@clerk/nextjs";
 
 export default authMiddleware({
-}); // aquí faltan cosas: publicRoutes, ignoredRoutes
+  publicRoutes: ["/:path*"],
+});
 
 // config. general de auth / authorization
 export const config = {
-    matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'],
-}
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+};
 
 // 1. /((?!.*\\..*|_next).*): ignore todos los paths o recursos que sean estáticos: imágenes, scripts, css, etc...
 // 2. / : ruta posterior a la autenticacion del usuario para acceder a la app: automáticamente protegida/privada
